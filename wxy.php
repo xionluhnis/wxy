@@ -65,14 +65,15 @@ $env->run_hooks('plugins_loaded', array(&$env));
 
 // 2 = Load the settings -------------------------------------------------------
 $defaults = array(
-	'site_title' => 'wxy',
-	'base_url' => HTTP::base_url(),
-	'theme' => 'default',
-	'date_format' => 'jS M Y',
-	'twig_config' => array('cache' => false, 'autoescape' => false, 'debug' => false),
-	'pages_order_by' => 'alpha',
-	'pages_order' => 'asc',
-	'excerpt_length' => 50
+	'site_title'      => 'wxy',
+  'base_url'        => HTTP::base_url(),
+  'theme_dir'       => 'themes',
+	'theme'           => 'default',
+	'date_format'     => 'jS M Y',
+	'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
+	'pages_order_by'  => 'alpha',
+	'pages_order'     => 'asc',
+	'excerpt_length'  => 50
 );
 $settings = Files::get_config('', $defaults);
 $env->run_hooks('config_loaded', array(&$settings));
@@ -89,7 +90,6 @@ if($request_url != $script_url)
 $url = preg_replace('/\?.*/', '', $url); // Strip query string
 $env->run_hooks('request_url', array(&$url));
 
-echo $result_url . ' ' . $script_url;
 
 // 4 = Load content ------------------------------------------------------------
 // Get the file path
@@ -182,7 +182,8 @@ $env->run_hooks('after_index', array(&$pages, &$current_page, &$prev_page, &$nex
 // Load the theme
 $env->run_hooks('before_twig_register');
 Twig_Autoloader::register();
-$loader = new Twig_Loader_Filesystem($settings['theme']);
+$theme_base_dir = $settings['theme_dir'] . '/' . $settings['theme'];
+$loader = new Twig_Loader_Filesystem($theme_base_dir);
 $twig = new Twig_Environment($loader, $settings['twig_config']);
 if($settings['debug']){
 	$twig->addExtension(new Twig_Extension_Debug());
@@ -192,7 +193,7 @@ $twig_vars = array(
 	'base_dir' => rtrim(ROOT_DIR, '/'),
 	'base_url' => $settings['base_url'],
 	'theme_dir' => $settings['theme'],
-	'theme_url' => $settings['base_url'] . '/' . $settings['theme'],
+	'theme_url' => $settings['base_url'] . '/' . $theme_base_dir,
 	'site_title' => $settings['site_title'],
 	'meta' => $meta,
 	'content' => $content,

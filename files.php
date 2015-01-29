@@ -31,7 +31,32 @@ class Files {
 			closedir($handle);
 		}
 		return $array_items;
-	}
+  }
+
+  /**
+   * Try to resolve a filename
+   */
+  public static function resolve($filename) {
+    $root = $_SERVER['DOCUMENT_ROOT'];
+    $uri = $_SERVER['REQUEST_URI'];
+    $uri = preg_replace('/\?.*/', '', $uri); // Strip query string
+    $path = explode('/', $uri);
+    do {
+      $file = $root . implode('/', $path) . '/' . $filename;
+      if(file_exists($file)){
+        return $file;
+      } else {
+        array_pop($path);
+      }
+    } while(!empty($path));
+    // try in the directory of script_name
+    $file = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . $filename;
+    if(file_exists($file)){
+      return $file;
+    } else {
+      return NULL;
+    }
+  }
 	
 	/**
 	 * Helper function to limit the words in a string
@@ -61,7 +86,7 @@ class Files {
 		} else {
 			$old_config = $defaults;
 		}
-		@include_once($conf_dir . '/config.php');
+		@include_once(self::resolve('config.php'));
 
 		if($config == $old_config)
 			return $config; // no need to merge
