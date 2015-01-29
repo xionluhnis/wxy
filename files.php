@@ -62,6 +62,12 @@ class Files {
 		}
 	}
 
+	/**
+	 * Resolve a filename and return all potential values
+	 * 
+	 * @param string $filename the file or directory name
+	 * @return array the list of resolved files
+	 */
 	public static function resolve_all($filename) {
 		$files = array();
 		$root = $_SERVER['DOCUMENT_ROOT'];
@@ -82,6 +88,14 @@ class Files {
 		}
 		return array_unique($files);
 	}
+	
+	/**
+	 * Retrieve the requested uri without the query
+	 */
+	public static function current_uri() {
+		$uri = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
+		return preg_replace('/\?.*/', '', $uri); // Strip query string
+	}
 
 	/**
 	 * Tries to resolve the current directory
@@ -93,15 +107,6 @@ class Files {
 		if (substr($current, $len - 1) === '/')
 			return substr($current, 0, $len - 1);
 		return dirname($current);
-	}
-
-	public static function current_uri() {
-		$uri = $_SERVER['REQUEST_URI'];
-		return preg_replace('/\?.*/', '', $uri); // Strip query string
-	}
-
-	public static function current_file() {
-		return basename(Files::current_uri());
 	}
 
 	/**
@@ -146,16 +151,16 @@ class Files {
 }
 
 /**
- * HTTP utility functions
+ * Request utility functions
  */
-class HTTP {
+class Request {
 
 	/**
 	 * Helper function to work out the base URL
 	 *
 	 * @return string the base url
 	 */
-	public static function base_url() {
+	public static function default_base_url() {
 		$url = '';
 		$request_url = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
 		$script_url = (isset($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : '';
@@ -164,6 +169,19 @@ class HTTP {
 
 		$protocol = HTTP::get_protocol();
 		return rtrim(str_replace($url, '', $protocol . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']), '/');
+	}
+	
+	/**
+	 * Retrieve the base url from the configuration
+	 * 
+	 * @return string the base url (without ending /)
+	 */
+	public static function base_url() {
+		global $config;
+		if(!is_array($config) || !array_key_exists('base_url', $config)){
+			die('Requesting url path without base_url in configuration!');
+		}
+		return rtrim($config['base_url'], ' /');
 	}
 
 	/**
@@ -177,6 +195,18 @@ class HTTP {
 			$protocol = 'https';
 		}
 		return $protocol;
+	}
+	
+	/**
+	 * Returns the url path above the url base
+	 * 
+	 * @return string the route parameter
+	 */
+	public static function route() {
+		$url = str_replace(Request::base_url(), '', Files::current_uri()); // Remove base url
+		$url = trim($url); // Trim white spaces
+		$url = '/' . ltrim($url, '/'); // Trim potential left slashes to normalize
+		return $url;
 	}
 
 }

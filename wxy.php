@@ -1,6 +1,7 @@
 <?php
 
 date_default_timezone_set('America/New_York');
+define('CONTENT_EXT', '.md');
 
 // Our helper functions --------------------------------------------------------
 include_once 'files.php';
@@ -67,7 +68,7 @@ $env->run_hooks('plugins_loaded', array(&$env));
 $defaults = array(
 	'site_title'      => 'wxy',
 	'base_dir'        => rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/'),
-	'base_url'        => HTTP::base_url(),
+	'base_url'        => Request::default_base_url(),
 	'theme_dir'       => 'themes',
 	'theme'           => 'default',
 	'date_format'     => 'jS M Y',
@@ -80,30 +81,21 @@ $settings = Files::get_config($defaults);
 $env->run_hooks('config_loaded', array(&$settings));
 
 
-// 3 = Get request url and script url ------------------------------------------
-$url = '';
-$request_url = (isset($_SERVER['REQUEST_URI'])) ? $_SERVER['REQUEST_URI'] : '';
-$script_url  = (isset($_SERVER['PHP_SELF'])) ? $_SERVER['PHP_SELF'] : '';
-
-// Get our url path and trim the / of the left and the right
-if($request_url != $script_url)
-	$url = trim(preg_replace('/'. str_replace('/', '\/', str_replace('index.php', '', $script_url)) .'/', '', $request_url, 1), '/');
-$url = preg_replace('/\?.*/', '', $url); // Strip query string
-$env->run_hooks('request_url', array(&$url));
+// 3 = Request routing ---------------------------------------------------------
+$route = Request::route();
+$env->run_hooks('request_url', array(&$route));
 
 
 // 4 = Load content ------------------------------------------------------------
-define('CURRENT_DIR', Files::current_dir());
-define('CURRENT_FILE', Files::current_file());
-define('CONTENT_EXT', '.md');
+$cur_dir  = Files::current_dir();
 // Get the file path
-if(CURRENT_FILE)
-	$file = CURRENT_DIR . '/' . $url;
+if($route)
+	$file = $cur_dir . '/' . $route;
 else
-	$file = CURRENT_DIR . '/index';
+	$file = $cur_dir . '/index';
 // Append extension
 if(is_dir($file))
-	$file = CURRENT_DIR .'/index'. CONTENT_EXT;
+	$file = $cur_dir . '/index' . CONTENT_EXT;
 else
 	$file .= CONTENT_EXT;
 
@@ -162,8 +154,7 @@ $content = $new_content;
 // Get all the pages
 $pages = array();
 $env->run_hooks('get_index', array(
-  $settings['base_url'], 
-  $env,
+	$file, $env,
 	$settings['pages_order_by'], 
 	$settings['pages_order'], 
 	$settings['excerpt_length'], 
@@ -171,7 +162,7 @@ $env->run_hooks('get_index', array(
 ));
 if(empty($pages)){
 	$pages = Markdown::get_pages(
-		$settings['base_url'], $env,
+		$file, $env,
 		$settings['pages_order_by'],
 		$settings['pages_order'],
 		$settings['excerpt_length'],

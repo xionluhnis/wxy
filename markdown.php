@@ -57,18 +57,23 @@ class Markdown {
 	/**
 	 * Get a list of pages
 	 *
-	 * @param string $base_url the base URL of the site
+	 * @param string file the file we get the content of
 	 * @param HookEnvironment $env
 	 * @param string $order_by order by "alpha" or "date"
 	 * @param string $order order "asc" or "desc"
 	 * @return array $sorted_pages an array of pages
 	 */
-	public static function get_pages($base_url, $env, 
+	public static function get_pages($file, $env, 
 			$order_by = 'alpha', $order = 'asc', 
 			$excerpt_length = 50, $headers = array()) {
 		global $config;
 
-		$cur_dir = Files::current_dir();
+		$cur_dir = dirname($file);
+		$base_url = Request::base_url();
+		$dir_url = Request::route();
+		if(substr($dir_url, -1) != '/'){
+			$dir_url = $base_url . dirname(str_replace($base_url, '', $dir_url));
+		}
 		$pages = Files::find($cur_dir, CONTENT_EXT);
 		$sorted_pages = array();
 		$date_id = 0;
@@ -88,7 +93,7 @@ class Markdown {
 			$page_content = file_get_contents($page);
 			$page_meta = Markdown::read_file_meta($page_content, $headers);
 			$page_content = Markdown::parse_content($page_content);
-			$url = str_replace($cur_dir, Files::current_uri() . '/', $page);
+			$url = str_replace($cur_dir, $dir_url . '/', $page);
 			$url = str_replace('index' . CONTENT_EXT, '', $url);
 			$url = str_replace(CONTENT_EXT, '', $url);
 			$data = array(
