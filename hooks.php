@@ -63,7 +63,7 @@ class HookEnvironment {
 	 * @param string $hook_name
 	 * @return boolean whether a new hook got created
 	 */
-	public function add_hook(string $hook_name, $connect = TRUE) {
+	public function add_hook($hook_name, $connect = TRUE) {
 		if (array_key_exists($hook_name, $this->hooks)) {
 			return FALSE;
 		}
@@ -98,7 +98,7 @@ class HookEnvironment {
 	 * 
 	 * @param string $plugin_file the plugin file name
 	 */
-	public function load_plugin(string $plugin_file) {
+	public function load_plugin($plugin_file) {
 		include_once($plugin_file);
 		$plugin_name = preg_replace("/\\.[^.\\s]{3}$/", '', basename($plugin_file));
 		if (class_exists($plugin_name)) {
@@ -128,7 +128,7 @@ class HookEnvironment {
 	 * @param string $hook_name
 	 * @param type $args
 	 */
-	public function run_hooks(string $hook_name, $args = array()){
+	public function run_hooks($hook_name, $args = array()){
 		$hook = $this->hooks[$hook_name];
 		if(!empty($hook)){
 			$hook->run($args);

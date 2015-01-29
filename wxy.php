@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('America/New_York');
+
 // Our helper functions --------------------------------------------------------
 include_once 'files.php';
 include_once 'hooks.php';
@@ -87,6 +89,7 @@ if($request_url != $script_url)
 $url = preg_replace('/\?.*/', '', $url); // Strip query string
 $env->run_hooks('request_url', array(&$url));
 
+echo $result_url . ' ' . $script_url;
 
 // 4 = Load content ------------------------------------------------------------
 // Get the file path

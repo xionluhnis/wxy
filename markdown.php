@@ -15,7 +15,7 @@ class Markdown {
 	 * Register a markdown parser
 	 */
 	public static function register($parser){
-		Markdown::$parser = $parser;
+		self::$parser = $parser;
 	}
 
 	/**
@@ -26,8 +26,9 @@ class Markdown {
 	 */
 	public static function parse_content($content) {
 		$content = preg_replace('#/\*.+?\*/#s', '', $content); // Remove comments and meta
-		$content = str_replace('%base_url%', HTTP::base_url(), $content);
-		return Markdown::$parser($content);
+    $content = str_replace('%base_url%', HTTP::base_url(), $content);
+    $parser = self::$parser;
+		return $parser($content);
 	}
 
 	/**
@@ -39,9 +40,6 @@ class Markdown {
 	public static function read_file_meta($content, $headers) {
 		global $config;
 
-		// Add support for custom headers by hooking into the headers array
-		$this->run_hooks('before_read_file_meta', array(&$headers));
-
 		foreach ($headers as $field => $regex) {
 			if (preg_match('/^[ \t\/*#@]*' . preg_quote($regex, '/') . ':(.*)$/mi', $content, $match) && $match[1]) {
 				$headers[$field] = trim(preg_replace("/\s*(?:\*\/|\?>).*/", '', $match[1]));
@@ -52,7 +50,6 @@ class Markdown {
 
 		if (isset($headers['date']) && isset($config['date_format']))
 			$headers['date_formatted'] = date($config['date_format'], strtotime($headers['date']));
-
 		return $headers;
 	}
 	
