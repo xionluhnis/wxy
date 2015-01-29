@@ -80,7 +80,7 @@ class Files {
 		if (file_exists($file)) {
 			$files[] = $file;
 		}
-		return $files;
+		return array_unique($files);
 	}
 
 	/**

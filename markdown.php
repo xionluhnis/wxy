@@ -69,7 +69,6 @@ class Markdown {
 		global $config;
 
 		$cur_dir = Files::current_dir();
-		echo "<!-- $cur_dir -->";
 		$pages = Files::find($cur_dir, CONTENT_EXT);
 		$sorted_pages = array();
 		$date_id = 0;
