@@ -37,8 +37,15 @@ $env = new HookEnvironment(array(
 	'after_load_content',
 	'before_404_load_content',
 	'after_404_load_content',
+	// get file meta
+	'before_file_meta',
+	'get_file_meta',
+	'after_file_meta',
+	// parse content
+	'before_parse_content',
+	'parse_content',
+	'after_parse_content',
 	// get index
-	'before_index',
 	'get_index',		// for loading the index
 	'get_page_data',	// for loading index page content
 	'after_index',		// when the index is loaded

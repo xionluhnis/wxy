@@ -112,7 +112,7 @@ class HookEnvironment {
 	 * 
 	 * @param string $plugin_dir the directory to load plugins from
 	 */
-	public function load_dir(string $plugin_dir = 'plugins') {
+	public function load_dir($plugin_dir = 'plugins') {
 		$plugins = Files::find($plugin_dir, '.php');
 		if (empty($plugins)) {
 			return;
