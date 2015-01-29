@@ -31,66 +31,81 @@ class Files {
 			closedir($handle);
 		}
 		return $array_items;
-  }
+	}
 
-  /**
-   * Try to resolve a filename
-   */
-  public static function resolve($filename) {
-    $root = $_SERVER['DOCUMENT_ROOT'];
-    $uri = $_SERVER['REQUEST_URI'];
-    $uri = preg_replace('/\?.*/', '', $uri); // Strip query string
-    $path = explode('/', $uri);
-    do {
-      $file = $root . implode('/', $path) . '/' . $filename;
-      if(file_exists($file)){
-        return $file;
-      } else {
-        array_pop($path);
-      }
-    } while(!empty($path));
-    // try in the directory of script_name
-    $file = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . $filename;
-    if(file_exists($file)){
-      return $file;
-    } else {
-      return NULL;
-    }
-  }
-	
+	/**
+	 * Try to resolve a filename
+	 */
+	public static function resolve($filename) {
+		$root = $_SERVER['DOCUMENT_ROOT'];
+		$uri = $_SERVER['REQUEST_URI'];
+		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
+		$path = explode('/', $uri);
+		do {
+			$file = $root . implode('/', $path) . '/' . $filename;
+			if (file_exists($file)) {
+				return $file;
+			} else {
+				array_pop($path);
+			}
+		} while (!empty($path));
+		// try in the directory of script_name
+		$file = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . $filename;
+		if (file_exists($file)) {
+			return $file;
+		} else {
+			return NULL;
+		}
+	}
+
+	/**
+	 * Tries to resolve the current directory
+	 */
+	public static function current_dir() {
+		$root = $_SERVER['DOCUMENT_ROOT'];
+		$uri = $_SERVER['REQUEST_URI'];
+		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
+		return dirname($root . '/' . $uri);
+	}
+
+	public static function current_file() {
+		$uri = $_SERVER['REQUEST_URI'];
+		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
+		return basename($uri);
+	}
+
 	/**
 	 * Helper function to limit the words in a string
 	 *
 	 * @param string $string the given string
 	 * @param int $word_limit the number of words to limit to
 	 * @return string the limited string
-	 */ 
-	public static function limit_words($string, $word_limit)
-	{
-		$words = explode(' ',$string);
+	 */
+	public static function limit_words($string, $word_limit) {
+		$words = explode(' ', $string);
 		$excerpt = trim(implode(' ', array_splice($words, 0, $word_limit)));
-		if(count($words) > $word_limit) $excerpt .= '&hellip;';
+		if (count($words) > $word_limit)
+			$excerpt .= '&hellip;';
 		return $excerpt;
 	}
-	
+
 	/**
 	 * Loads the config
 	 *
 	 * @return array $config an array of config values
 	 */
-	public static function get_config($conf_dir = '.', $defaults = array())
-	{
+	public static function get_config($conf_dir = '.', $defaults = array()) {
 		global $config;
-		if(is_array($config)){
+		if (is_array($config)) {
 			$old_config = $config;
 		} else {
 			$old_config = $defaults;
 		}
 		@include_once(self::resolve('config.php'));
 
-		if($config == $old_config)
+		if ($config == $old_config)
 			return $config; // no need to merge
-		if(is_array($config))
+		if (is_array($config))
 			$config = array_merge($old_config, $config);
 		else
 			$config = $old_config;

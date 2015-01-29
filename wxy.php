@@ -66,8 +66,9 @@ $env->run_hooks('plugins_loaded', array(&$env));
 // 2 = Load the settings -------------------------------------------------------
 $defaults = array(
 	'site_title'      => 'wxy',
-  'base_url'        => HTTP::base_url(),
-  'theme_dir'       => 'themes',
+	'base_dir'		  => rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/'),
+	'base_url'        => HTTP::base_url(),
+	'theme_dir'       => 'themes',
 	'theme'           => 'default',
 	'date_format'     => 'jS M Y',
 	'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
@@ -92,14 +93,17 @@ $env->run_hooks('request_url', array(&$url));
 
 
 // 4 = Load content ------------------------------------------------------------
+define('CURRENT_DIR', Files::current_dir());
+define('CURRENT_FILE', Files::current_file());
+define('CONTENT_EXT', '.md');
 // Get the file path
-if($url)
-	$file = CONTENT_DIR . $url;
+if(CURRENT_FILE)
+	$file = CURRENT_DIR . '/' . $url;
 else
-	$file = CONTENT_DIR .'index';
+	$file = CURRENT_DIR . '/index';
 // Append extension
 if(is_dir($file))
-	$file = CONTENT_DIR . $url .'/index'. CONTENT_EXT;
+	$file = CURRENT_DIR .'/index'. CONTENT_EXT;
 else
 	$file .= CONTENT_EXT;
 
@@ -108,7 +112,17 @@ if(file_exists($file)){
 	$content = file_get_contents($file);
 } else {
 	$env->run_hooks('before_404_load_content', array(&$file));
-	$content = file_get_contents(CONTENT_DIR .'404'. CONTENT_EXT);
+	// $content = file_get_contents(CONTENT_DIR .'404'. CONTENT_EXT);"
+	$content = '
+/*
+Title: Error 404
+Robots: noindex,nofollow
+*/
+
+Error 404
+=========
+
+Woops. Looks like this page doesn\'t exist.';
 	header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
 	$env->run_hooks('after_404_load_content', array(&$file, &$content));
 }
@@ -190,7 +204,7 @@ if($settings['debug']){
 }
 $twig_vars = array(
 	'config' => $settings,
-	'base_dir' => rtrim(ROOT_DIR, '/'),
+	'base_dir' => $settings['base_dir'],
 	'base_url' => $settings['base_url'],
 	'theme_dir' => $settings['theme'],
 	'theme_url' => $settings['base_url'] . '/' . $theme_base_dir,
