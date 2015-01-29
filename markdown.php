@@ -67,7 +67,8 @@ class Markdown {
 	 */
 	public static function get_pages($base_url, $env,
 									 $order_by = 'alpha', $order = 'asc', 
-									 $excerpt_length = 50) {
+									 $excerpt_length = 50,
+									 $headers = array()) {
 		global $config;
 
 		$pages = Files::find(CONTENT_DIR, CONTENT_EXT);
@@ -87,7 +88,7 @@ class Markdown {
 			}
 			// Get title and format $page
 			$page_content = file_get_contents($page);
-			$page_meta = Markdown::read_file_meta($page_content);
+			$page_meta = Markdown::read_file_meta($page_content, $headers);
 			$page_content = Markdown::parse_content($page_content);
 			$url = str_replace(CONTENT_DIR, $base_url . '/', $page);
 			$url = str_replace('index' . CONTENT_EXT, '', $url);
@@ -99,7 +100,7 @@ class Markdown {
 				'date' => isset($page_meta['date']) ? $page_meta['date'] : '',
 				'date_formatted' => isset($page_meta['date']) ? date($config['date_format'], strtotime($page_meta['date'])) : '',
 				'content' => $page_content,
-				'excerpt' => $this->limit_words(strip_tags($page_content), $excerpt_length)
+				'excerpt' => Files::limit_words(strip_tags($page_content), $excerpt_length)
 			);
 
 			// Extend the data provided with each page by hooking into the data array

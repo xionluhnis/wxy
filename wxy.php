@@ -124,7 +124,7 @@ $env->run_hooks('after_file_meta', array($content, &$meta));
 
 
 // 6 = Parse content -----------------------------------------------------------
-$this->run_hooks('before_parse_content', array(&$content));
+$env->run_hooks('before_parse_content', array(&$content));
 $new_content = FALSE;
 $env->run_hooks('parse_content', array($content, &$new_content));
 if($new_content === FALSE){
@@ -149,7 +149,8 @@ if(empty($pages)){
 		$settings['base_url'], 
 		$settings['pages_order_by'], 
 		$settings['pages_order'], 
-		$settings['excerpt_length']
+		$settings['excerpt_length'],
+		$headers
 	);
 }
 $prev_page = array();
