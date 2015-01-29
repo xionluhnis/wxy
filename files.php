@@ -86,21 +86,12 @@ class Files {
 	 * Tries to resolve the current directory
 	 */
 	public static function current_dir() {
-		global $config;
-		$root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
-		if(is_array($config) && array_key_exists('base_url', $config)){
-			$base_url = $config['base_url'];
-			if(array_key_exists('base_dir', $config)){
-				$base_dir = $config['base_dir'];
-			} else {
-				$base_dir = $base_url;
-			}
-			$base_dir = rtrim($base_dir, '/');
-			return dirname($root . '/' . $base_dir . '/' . 
-							str_replace(Files::current_uri(), $base_dir, ''));
-		} else {
-			return dirname($root . '/' . Files::current_uri());
-		}
+    $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
+    $current = $root . Files::current_uri();
+    $len = strlen($current);
+    if(substr($current, $len - 1) === '/')
+      return substr($current, 0, $len - 1);
+		return dirname($current);
 	}
 	
 	public static function current_uri() {

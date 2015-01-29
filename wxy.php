@@ -66,7 +66,7 @@ $env->run_hooks('plugins_loaded', array(&$env));
 // 2 = Load the settings -------------------------------------------------------
 $defaults = array(
 	'site_title'      => 'wxy',
-	'base_dir'		  => rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/'),
+	'base_dir'        => rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/'),
 	'base_url'        => HTTP::base_url(),
 	'theme_dir'       => 'themes',
 	'theme'           => 'default',
@@ -162,7 +162,8 @@ $content = $new_content;
 // Get all the pages
 $pages = array();
 $env->run_hooks('get_index', array(
-	$settings['base_url'], 
+  $settings['base_url'], 
+  $env,
 	$settings['pages_order_by'], 
 	$settings['pages_order'], 
 	$settings['excerpt_length'], 
@@ -170,9 +171,9 @@ $env->run_hooks('get_index', array(
 ));
 if(empty($pages)){
 	$pages = Markdown::get_pages(
-		$settings['base_url'], 
-		$settings['pages_order_by'], 
-		$settings['pages_order'], 
+		$settings['base_url'], $env,
+		$settings['pages_order_by'],
+		$settings['pages_order'],
 		$settings['excerpt_length'],
 		$headers
 	);
