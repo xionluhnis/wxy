@@ -115,7 +115,7 @@ class HookEnvironment {
 	public function load_dir($plugin_dir = 'plugins') {
 		$dirs = Files::resolve_all($plugin_dir);
 		foreach($dirs as $dir){
-			$plugins = Files::find($dir, '.php');
+			$plugins = Files::find($dir, '.php', FALSE);
 			if (empty($plugins)) {
 				return;
 			}

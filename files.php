@@ -12,15 +12,18 @@ class Files {
 	 *
 	 * @param string $directory start directory
 	 * @param string $ext optional limit to file extensions
+	 * @param boolean $recursive whether to search recursively
 	 * @return array the matched files
 	 */
-	public static function find($directory, $ext = '') {
+	public static function find($directory, $ext = '', $recursive = TRUE) {
 		$array_items = array();
 		if ($handle = opendir($directory)) {
 			while (false !== ($file = readdir($handle))) {
 				if (preg_match("/^(^\.)/", $file) === 0) {
 					if (is_dir($directory . "/" . $file)) {
-						$array_items = array_merge($array_items, Files::find($directory . "/" . $file, $ext));
+						if($recursive){
+							$array_items = array_merge($array_items, Files::find($directory . "/" . $file, $ext));
+						}	
 					} else {
 						$file = $directory . "/" . $file;
 						if (!$ext || strstr($file, $ext))
