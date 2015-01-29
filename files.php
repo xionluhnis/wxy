@@ -84,15 +84,16 @@ class Files {
 	 */
 	public static function current_dir() {
 		$root = $_SERVER['DOCUMENT_ROOT'];
+		return dirname($root . '/' . Files::current_uri());
+	}
+	
+	public static function current_uri() {
 		$uri = $_SERVER['REQUEST_URI'];
-		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
-		return dirname($root . '/' . $uri);
+		return preg_replace('/\?.*/', '', $uri); // Strip query string
 	}
 
 	public static function current_file() {
-		$uri = $_SERVER['REQUEST_URI'];
-		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
-		return basename($uri);
+		return basename(Files::current_uri());
 	}
 
 	/**

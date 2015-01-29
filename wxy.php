@@ -199,7 +199,7 @@ Twig_Autoloader::register();
 $theme_base_dir = $settings['theme_dir'] . '/' . $settings['theme'];
 $loader = new Twig_Loader_Filesystem($theme_base_dir);
 $twig = new Twig_Environment($loader, $settings['twig_config']);
-if($settings['debug']){
+if(array_key_exists('debug', $settings) && $settings['debug']){
 	$twig->addExtension(new Twig_Extension_Debug());
 }
 $twig_vars = array(

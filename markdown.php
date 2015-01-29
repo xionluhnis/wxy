@@ -68,7 +68,8 @@ class Markdown {
 									 $headers = array()) {
 		global $config;
 
-		$pages = Files::find(CONTENT_DIR, CONTENT_EXT);
+		$cur_dir = Files::current_dir();
+		$pages = Files::find($cur_dir, CONTENT_EXT);
 		$sorted_pages = array();
 		$date_id = 0;
 		foreach ($pages as $key => $page) {
@@ -87,7 +88,7 @@ class Markdown {
 			$page_content = file_get_contents($page);
 			$page_meta = Markdown::read_file_meta($page_content, $headers);
 			$page_content = Markdown::parse_content($page_content);
-			$url = str_replace(CONTENT_DIR, $base_url . '/', $page);
+			$url = str_replace($cur_dir, Files::current_uri() . '/', $page);
 			$url = str_replace('index' . CONTENT_EXT, '', $url);
 			$url = str_replace(CONTENT_EXT, '', $url);
 			$data = array(
