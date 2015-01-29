@@ -9,12 +9,13 @@ include_once 'hooks.php';
  * @author Alexandre Kaspar
  */
 class Markdown {
-	
+
 	private static $parser;
+
 	/**
 	 * Register a markdown parser
 	 */
-	public static function register($parser){
+	public static function register($parser) {
 		self::$parser = $parser;
 	}
 
@@ -26,8 +27,8 @@ class Markdown {
 	 */
 	public static function parse_content($content) {
 		$content = preg_replace('#/\*.+?\*/#s', '', $content); // Remove comments and meta
-    $content = str_replace('%base_url%', HTTP::base_url(), $content);
-    $parser = self::$parser;
+		$content = str_replace('%base_url%', HTTP::base_url(), $content);
+		$parser = self::$parser;
 		return $parser($content);
 	}
 
@@ -52,7 +53,7 @@ class Markdown {
 			$headers['date_formatted'] = date($config['date_format'], strtotime($headers['date']));
 		return $headers;
 	}
-	
+
 	/**
 	 * Get a list of pages
 	 *
@@ -62,10 +63,9 @@ class Markdown {
 	 * @param string $order order "asc" or "desc"
 	 * @return array $sorted_pages an array of pages
 	 */
-	public static function get_pages($base_url, $env,
-									 $order_by = 'alpha', $order = 'asc', 
-									 $excerpt_length = 50,
-									 $headers = array()) {
+	public static function get_pages($base_url, $env, 
+			$order_by = 'alpha', $order = 'asc', 
+			$excerpt_length = 50, $headers = array()) {
 		global $config;
 
 		$cur_dir = Files::current_dir();

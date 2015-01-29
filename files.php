@@ -21,9 +21,10 @@ class Files {
 			while (false !== ($file = readdir($handle))) {
 				if (preg_match("/^(^\.)/", $file) === 0) {
 					if (is_dir($directory . "/" . $file)) {
-						if($recursive){
-							$array_items = array_merge($array_items, Files::find($directory . "/" . $file, $ext));
-						}	
+						if ($recursive) {
+							$array_items = array_merge($array_items, 
+									Files::find($directory . "/" . $file, $ext));
+						}
 					} else {
 						$file = $directory . "/" . $file;
 						if (!$ext || strstr($file, $ext))
@@ -60,7 +61,7 @@ class Files {
 			return NULL;
 		}
 	}
-	
+
 	public static function resolve_all($filename) {
 		$files = array();
 		$root = $_SERVER['DOCUMENT_ROOT'];
@@ -86,14 +87,14 @@ class Files {
 	 * Tries to resolve the current directory
 	 */
 	public static function current_dir() {
-    $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
-    $current = $root . Files::current_uri();
-    $len = strlen($current);
-    if(substr($current, $len - 1) === '/')
-      return substr($current, 0, $len - 1);
+		$root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
+		$current = $root . Files::current_uri();
+		$len = strlen($current);
+		if (substr($current, $len - 1) === '/')
+			return substr($current, 0, $len - 1);
 		return dirname($current);
 	}
-	
+
 	public static function current_uri() {
 		$uri = $_SERVER['REQUEST_URI'];
 		return preg_replace('/\?.*/', '', $uri); // Strip query string

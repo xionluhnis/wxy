@@ -114,7 +114,7 @@ class HookEnvironment {
 	 */
 	public function load_dir($plugin_dir = 'plugins') {
 		$dirs = Files::resolve_all($plugin_dir);
-		foreach($dirs as $dir){
+		foreach ($dirs as $dir) {
 			$plugins = Files::find($dir, '.php', FALSE);
 			if (empty($plugins)) {
 				return;
@@ -124,16 +124,16 @@ class HookEnvironment {
 			}
 		}
 	}
-	
+
 	/**
 	 * Trigger hooks
 	 * 
 	 * @param string $hook_name
 	 * @param type $args
 	 */
-	public function run_hooks($hook_name, $args = array()){
+	public function run_hooks($hook_name, $args = array()) {
 		$hook = $this->hooks[$hook_name];
-		if(!empty($hook)){
+		if (!empty($hook)) {
 			$hook->run($args);
 		}
 	}
