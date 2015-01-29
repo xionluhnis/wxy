@@ -6,15 +6,15 @@ include_once 'hooks.php';
 include_once 'markdown.php';
 
 // Registering a markdown parser -----------------------------------------------
-include_once 'libs/Parsedown.php';
-include_once 'libs/ParsedownExtra.php';
+include_once 'libs/parsedown/Parsedown.php';
+include_once 'libs/parsedown-extra/ParsedownExtra.php';
 $mkdown = new ParsedownExtra();
 Markdown::register(function($text) use (&$mkdown) {
 	return $mkdown->text($text);
 });
 
 // Loading our twig version ----------------------------------------------------
-include_once 'libs/Twig/lib/Twig/Autoloader.php';
+include_once 'libs/twig/lib/Twig/Autoloader.php';
 
 /**
  * wxy - three-letter-cms
