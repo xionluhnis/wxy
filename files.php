@@ -57,6 +57,27 @@ class Files {
 			return NULL;
 		}
 	}
+	
+	public static function resolve_all($filename) {
+		$files = array();
+		$root = $_SERVER['DOCUMENT_ROOT'];
+		$uri = $_SERVER['REQUEST_URI'];
+		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
+		$path = explode('/', $uri);
+		do {
+			$file = $root . implode('/', $path) . '/' . $filename;
+			if (file_exists($file)) {
+				$files[] = $file;
+			}
+			array_pop($path);
+		} while (!empty($path));
+		// try in the directory of script_name
+		$file = dirname($_SERVER['SCRIPT_FILENAME']) . '/' . $filename;
+		if (file_exists($file)) {
+			$files[] = $file;
+		}
+		return $files;
+	}
 
 	/**
 	 * Tries to resolve the current directory
@@ -94,7 +115,7 @@ class Files {
 	 *
 	 * @return array $config an array of config values
 	 */
-	public static function get_config($conf_dir = '.', $defaults = array()) {
+	public static function get_config($defaults = array()) {
 		global $config;
 		if (is_array($config)) {
 			$old_config = $config;

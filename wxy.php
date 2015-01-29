@@ -76,7 +76,7 @@ $defaults = array(
 	'pages_order'     => 'asc',
 	'excerpt_length'  => 50
 );
-$settings = Files::get_config('', $defaults);
+$settings = Files::get_config($defaults);
 $env->run_hooks('config_loaded', array(&$settings));
 
 

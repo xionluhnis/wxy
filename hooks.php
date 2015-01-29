@@ -108,17 +108,20 @@ class HookEnvironment {
 	}
 
 	/**
-	 * Load all the plugins within a directory
+	 * Load all the plugins that can be resolved
 	 * 
 	 * @param string $plugin_dir the directory to load plugins from
 	 */
 	public function load_dir($plugin_dir = 'plugins') {
-		$plugins = Files::find($plugin_dir, '.php');
-		if (empty($plugins)) {
-			return;
-		}
-		foreach ($plugins as $plugin) {
-			$this->load_plugin($plugin);
+		$dirs = Files::resolve_all($plugin_dir);
+		foreach($dirs as $dir){
+			$plugins = Files::find($dir, '.php');
+			if (empty($plugins)) {
+				return;
+			}
+			foreach ($plugins as $plugin) {
+				$this->load_plugin($plugin);
+			}
 		}
 	}
 	
