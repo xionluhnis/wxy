@@ -59,16 +59,12 @@ class Markdown {
 	 *
 	 * @param string file the file we get the content of
 	 * @param HookEnvironment $env
-	 * @param string $order_by order by "alpha" or "date"
-	 * @param string $order order "asc" or "desc"
 	 * @return array $sorted_pages an array of pages
 	 */
-	public static function get_pages($file, $env, 
-			$order_by = 'alpha', $order = 'asc', 
-			$excerpt_length = 50, $headers = array()) {
+	public static function get_pages($file, $env, $headers = array()) {
 		global $config;
-
-		$cur_dir = dirname($file);
+        
+        $cur_dir = dirname($file);
 		$base_url = Request::base_url();
 		$dir_url = Request::route();
 		if(substr($dir_url, -1) != '/'){
@@ -98,18 +94,19 @@ class Markdown {
 			$url = str_replace(CONTENT_EXT, '', $url);
 			$data = array(
 				'title' => isset($page_meta['title']) ? $page_meta['title'] : '',
-				'url' => $url,
+                'url' => $url,
+                'file' => $page,
 				'author' => isset($page_meta['author']) ? $page_meta['author'] : '',
 				'date' => isset($page_meta['date']) ? $page_meta['date'] : '',
 				'date_formatted' => isset($page_meta['date']) ? date($config['date_format'], strtotime($page_meta['date'])) : '',
 				'content' => $page_content,
-				'excerpt' => Text::limit_words(strip_tags($page_content), $excerpt_length)
+				'excerpt' => Text::limit_words(strip_tags($page_content), $config['excerpt_length'])
 			);
 
 			// Extend the data provided with each page by hooking into the data array
-			$env->run_hooks('get_page_data', array(&$data, $page_meta));
+			$env->run_hooks('after_indexing_content', array(&$data, $page_meta));
 
-			if ($order_by == 'date' && isset($page_meta['date'])) {
+			if ($config['order_by'] == 'date' && isset($page_meta['date'])) {
 				$sorted_pages[$page_meta['date'] . $date_id] = $data;
 				$date_id++;
 			}
@@ -117,7 +114,7 @@ class Markdown {
 				$sorted_pages[] = $data;
 		}
 
-		if ($order == 'desc')
+		if ($config['order'] == 'desc')
 			krsort($sorted_pages);
 		else
 			ksort($sorted_pages);

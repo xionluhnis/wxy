@@ -1,7 +1,7 @@
 <?php
 
-date_default_timezone_set('America/New_York');
 define('CONTENT_EXT', '.md');
+define('ROOT_DIR', dirname(__FILE__));
 
 // Our helper functions --------------------------------------------------------
 include_once 'files.php';
@@ -50,8 +50,10 @@ $env = new HookEnvironment(array(
 	'after_parse_content',
 	// get index
 	'get_index',		// for loading the index
-	'get_page_data',	// for loading index page content
-	'after_index',		// when the index is loaded
+    'after_index',		// when the index is loaded
+    // indexing hooks
+    'indexing_content',
+    'after_indexing_content',
 	// twig
 	'before_twig_register',
 	'before_render',
@@ -75,14 +77,16 @@ $defaults = array(
 	'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
 	'pages_order_by'  => 'alpha',
 	'pages_order'     => 'asc',
-  'excerpt_length'  => 50,
-  'debug'           => FALSE,
+    'excerpt_length'  => 50,
+    'timezone'        => 'America/New_York',
+    'debug'           => FALSE,
 );
 $settings = Files::get_config($defaults);
 $env->run_hooks('config_loaded', array(&$settings));
 if($settings['debug']){
   ini_set('display_errors', '1');
 }
+date_default_timezone_set($settings['timezone']);
 
 // 3 = Request routing ---------------------------------------------------------
 $route = Request::route();
@@ -144,27 +148,15 @@ $content = $new_content;
 // 7 = Create index ------------------------------------------------------------
 // Get all the pages
 $pages = array();
-$env->run_hooks('get_index', array(
-	$file, $env,
-	$settings['pages_order_by'], 
-	$settings['pages_order'], 
-	$settings['excerpt_length'], 
-	&$pages
-));
+$env->run_hooks('get_index', array($file, $env, &$pages));
 if(empty($pages)){
-	$pages = Markdown::get_pages(
-		$file, $env,
-		$settings['pages_order_by'],
-		$settings['pages_order'],
-		$settings['excerpt_length'],
-		$headers
-	);
+	$pages = Markdown::get_pages($file, $env, $headers);
 }
 $prev_page = array();
 $current_page = array();
 $next_page = array();
 while($current_page = current($pages)){
-	if((isset($meta['title'])) && ($meta['title'] == $current_page['title'])){
+	if($file == $current_page['file']){
 		break;
 	}
 	next($pages);
@@ -186,18 +178,19 @@ if(array_key_exists('debug', $settings) && $settings['debug']){
 	$twig->addExtension(new Twig_Extension_Debug());
 }
 $twig_vars = array(
-	'config' => $settings,
-	'base_dir' => $settings['base_dir'],
-	'base_url' => $settings['base_url'],
-	'theme_dir' => $settings['theme'],
-	'theme_url' => $settings['base_url'] . '/' . $theme_base_dir,
-	'site_title' => $settings['site_title'],
-	'meta' => $meta,
-	'content' => $content,
-	'pages' => $pages,
-	'prev_page' => $prev_page,
-	'current_page' => $current_page,
-	'next_page' => $next_page,
+	'config'        => $settings,
+	'base_dir'      => $settings['base_dir'],
+	'base_url'      => $settings['base_url'],
+	'theme_dir'     => $settings['theme'],
+	'theme_url'     => $settings['base_url'] . '/' . $theme_base_dir,
+	'site_title'    => $settings['site_title'],
+	'meta'          => $meta,
+	'content'       => $content,
+	'pages'         => $pages,
+	'prev_page'     => $prev_page,
+	'current_page'  => $current_page,
+    'next_page'     => $next_page,
+    'parent_page'   => 
 	'is_front_page' => trim($route, ' /') ? false : true,
 );
 if(isset($meta['template']) && $meta['template'])

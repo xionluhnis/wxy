@@ -1,6 +1,6 @@
 <?php
 
-include_once '../files.php';
+include_once ROOT_DIR . '/files.php';
 
 /**
  * Custom 404 Page Not Found using a 404.md file
