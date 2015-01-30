@@ -13,7 +13,7 @@ include_once 'libs/parsedown/Parsedown.php';
 include_once 'libs/parsedown-extra/ParsedownExtra.php';
 $mkdown = new ParsedownExtra();
 Markdown::register(function($text) use (&$mkdown) {
-	return $mkdown->text($text);
+    return $mkdown->text($text);
 });
 
 // Loading our twig version ----------------------------------------------------
@@ -32,32 +32,32 @@ include_once 'libs/twig/lib/Twig/Autoloader.php';
 
 // 0 = Create hooks ------------------------------------------------------------
 $env = new HookEnvironment(array(
-	'plugins_loaded',	// when plugins are loaded
-	'config_loaded',	// when the configuration is loaded
-	'request_url',		// for reacting to the url request
-	// load content
-	'before_load_content',
-	'after_load_content',
-	'before_404_load_content',
-	'after_404_load_content',
-	// get file meta
-	'before_file_meta',
-	'get_file_meta',
-	'after_file_meta',
-	// parse content
-	'before_parse_content',
-	'parse_content',
-	'after_parse_content',
-	// get index
-	'get_index',		// for loading the index
-    'after_index',		// when the index is loaded
+    'plugins_loaded',   // when plugins are loaded
+    'config_loaded',    // when the configuration is loaded
+    'request_url',      // for reacting to the url request
+    // load content
+    'before_load_content',
+    'after_load_content',
+    'before_404_load_content',
+    'after_404_load_content',
+    // get file meta
+    'before_file_meta',
+    'get_file_meta',
+    'after_file_meta',
+    // parse content
+    'before_parse_content',
+    'parse_content',
+    'after_parse_content',
+    // get index
+    'get_index',        // for loading the index
+    'after_index',      // when the index is loaded
     // indexing hooks
     'indexing_content',
     'after_indexing_content',
-	// twig
-	'before_twig_register',
-	'before_render',
-	'after_render',
+    // twig
+    'before_twig_register',
+    'before_render',
+    'after_render',
 ));
 
 
@@ -68,15 +68,15 @@ $env->run_hooks('plugins_loaded', array(&$env));
 
 // 2 = Load the settings -------------------------------------------------------
 $defaults = array(
-	'site_title'      => 'wxy',
-	'base_dir'        => rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/'),
-	'base_url'        => Request::default_base_url(),
-	'theme_dir'       => 'themes',
-	'theme'           => 'default',
-	'date_format'     => 'jS M Y',
-	'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
-	'order_by'        => 'alpha',
-	'order'           => 'asc',
+    'site_title'      => 'wxy',
+    'base_dir'        => rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/'),
+    'base_url'        => Request::default_base_url(),
+    'theme_dir'       => 'themes',
+    'theme'           => 'default',
+    'date_format'     => 'jS M Y',
+    'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
+    'order_by'        => 'alpha',
+    'order'           => 'asc',
     'excerpt_length'  => 50,
     'timezone'        => 'America/New_York',
     'debug'           => FALSE,
@@ -97,10 +97,10 @@ $env->run_hooks('request_url', array(&$route));
 $file = Files::resolve_page($route);
 $env->run_hooks('before_load_content', array(&$file));
 if(file_exists($file)){
-	$content = file_get_contents($file);
+    $content = file_get_contents($file);
 } else {
-	$env->run_hooks('before_404_load_content', array(&$file));
-	$content = '
+    $env->run_hooks('before_404_load_content', array(&$file));
+    $content = '
 /*
 Title: Error 404
 Robots: noindex,nofollow
@@ -110,26 +110,26 @@ Error 404
 =========
 
 Woops. Looks like this page doesn\'t exist.';
-	header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
-	$env->run_hooks('after_404_load_content', array(&$file, &$content));
+    header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
+    $env->run_hooks('after_404_load_content', array(&$file, &$content));
 }
 $env->run_hooks('after_load_content', array(&$file, &$content));
 
 
 // 5 = Load meta ---------------------------------------------------------------
 $headers = array(
-	'title' => 'Title',
-	'description' => 'Description',
-	'author' => 'Author',
-	'date' => 'Date',
-	'robots' => 'Robots',
-	'template' => 'Template'
+    'title' => 'Title',
+    'description' => 'Description',
+    'author' => 'Author',
+    'date' => 'Date',
+    'robots' => 'Robots',
+    'template' => 'Template'
 );
 $env->run_hooks('before_file_meta', array($content, &$headers));
 $meta = array();
 $env->run_hooks('get_file_meta', array($content, &$headers, &$meta));
 if(empty($meta)){
-	$meta = Markdown::read_file_meta($content, $headers);
+    $meta = Markdown::read_file_meta($content, $headers);
 }
 $env->run_hooks('after_file_meta', array($content, &$meta));
 
@@ -139,7 +139,7 @@ $env->run_hooks('before_parse_content', array(&$content));
 $new_content = FALSE;
 $env->run_hooks('parse_content', array($content, &$new_content));
 if($new_content === FALSE){
-	$new_content = Markdown::parse_content($content);
+    $new_content = Markdown::parse_content($content);
 }
 $env->run_hooks('after_parse_content', array(&$new_content));
 $content = $new_content;
@@ -150,16 +150,16 @@ $content = $new_content;
 $pages = array();
 $env->run_hooks('get_index', array($file, $env, &$pages));
 if(empty($pages)){
-	$pages = Markdown::get_pages($file, $env, $headers);
+    $pages = Markdown::get_pages($file, $env, $headers);
 }
 $prev_page = array();
 $current_page = array();
 $next_page = array();
 while($current_page = current($pages)){
-	if($file == $current_page['file']){
-		break;
-	}
-	next($pages);
+    if($file == $current_page['file']){
+        break;
+    }
+    next($pages);
 }
 $prev_page = next($pages);
 prev($pages);
@@ -175,33 +175,33 @@ $theme_base_dir = $settings['theme_dir'] . '/' . $settings['theme'];
 $loader = new Twig_Loader_Filesystem($theme_base_dir);
 $twig = new Twig_Environment($loader, $settings['twig_config']);
 if(array_key_exists('debug', $settings) && $settings['debug']){
-	$twig->addExtension(new Twig_Extension_Debug());
+    $twig->addExtension(new Twig_Extension_Debug());
 }
 $base_url = $settings['base_url'];
 $parent_route = dirname(str_replace($base_url, '/', $route));
 $twig_vars = array(
-	'config'        => $settings,
-	'base_dir'      => $settings['base_dir'],
-	'base_url'      => $base_url,
-	'theme_dir'     => $settings['theme'],
-	'theme_url'     => $base_url . '/' . $theme_base_dir,
-	'site_title'    => $settings['site_title'],
-	'meta'          => $meta,
-	'content'       => $content,
-	'pages'         => $pages,
-	'prev_page'     => $prev_page,
-	'current_page'  => $current_page,
+    'config'        => $settings,
+    'base_dir'      => $settings['base_dir'],
+    'base_url'      => $base_url,
+    'theme_dir'     => $settings['theme'],
+    'theme_url'     => $base_url . '/' . $theme_base_dir,
+    'site_title'    => $settings['site_title'],
+    'meta'          => $meta,
+    'content'       => $content,
+    'pages'         => $pages,
+    'prev_page'     => $prev_page,
+    'current_page'  => $current_page,
     'next_page'     => $next_page,
     'current_route' => $route,
     'parent_route'  => $parent_route,
     'current_url'   => rtrim($base_url . '/' . $route, '/'),
     'parent_url'    => rtrim($base_url . '/' . $parent_route, '/'),
-	'is_front_page' => trim($route, ' /') ? false : true,
+    'is_front_page' => trim($route, ' /') ? false : true,
 );
 if(isset($meta['template']) && $meta['template'])
-	$template = $meta['template'];
+    $template = $meta['template'];
 else
-	$template = 'index';
+    $template = 'index';
 $env->run_hooks('before_render', array(&$twig_vars, &$twig, &$template));
 $output = $twig->render($template . '.html', $twig_vars);
 $env->run_hooks('after_render', array(&$output));
