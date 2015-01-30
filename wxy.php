@@ -75,11 +75,14 @@ $defaults = array(
 	'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
 	'pages_order_by'  => 'alpha',
 	'pages_order'     => 'asc',
-	'excerpt_length'  => 50
+  'excerpt_length'  => 50,
+  'debug'           => FALSE,
 );
 $settings = Files::get_config($defaults);
 $env->run_hooks('config_loaded', array(&$settings));
-
+if($settings['debug']){
+  ini_set('display_errors', '1');
+}
 
 // 3 = Request routing ---------------------------------------------------------
 $route = Request::route();
@@ -87,24 +90,12 @@ $env->run_hooks('request_url', array(&$route));
 
 
 // 4 = Load content ------------------------------------------------------------
-$cur_dir  = Files::current_dir();
-// Get the file path
-if($route)
-	$file = $cur_dir . '/' . $route;
-else
-	$file = $cur_dir . '/index';
-// Append extension
-if(is_dir($file))
-	$file = $cur_dir . '/index' . CONTENT_EXT;
-else
-	$file .= CONTENT_EXT;
-
+$file = Files::resolve_page($route);
 $env->run_hooks('before_load_content', array(&$file));
 if(file_exists($file)){
 	$content = file_get_contents($file);
 } else {
 	$env->run_hooks('before_404_load_content', array(&$file));
-	// $content = file_get_contents(CONTENT_DIR .'404'. CONTENT_EXT);"
 	$content = '
 /*
 Title: Error 404
@@ -207,7 +198,7 @@ $twig_vars = array(
 	'prev_page' => $prev_page,
 	'current_page' => $current_page,
 	'next_page' => $next_page,
-	'is_front_page' => $url ? false : true,
+	'is_front_page' => trim($route, ' /') ? false : true,
 );
 if(isset($meta['template']) && $meta['template'])
 	$template = $meta['template'];

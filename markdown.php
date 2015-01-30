@@ -27,7 +27,7 @@ class Markdown {
 	 */
 	public static function parse_content($content) {
 		$content = preg_replace('#/\*.+?\*/#s', '', $content); // Remove comments and meta
-		$content = str_replace('%base_url%', HTTP::base_url(), $content);
+		$content = str_replace('%base_url%', Request::base_url(), $content);
 		$parser = self::$parser;
 		return $parser($content);
 	}
@@ -103,7 +103,7 @@ class Markdown {
 				'date' => isset($page_meta['date']) ? $page_meta['date'] : '',
 				'date_formatted' => isset($page_meta['date']) ? date($config['date_format'], strtotime($page_meta['date'])) : '',
 				'content' => $page_content,
-				'excerpt' => Files::limit_words(strip_tags($page_content), $excerpt_length)
+				'excerpt' => Text::limit_words(strip_tags($page_content), $excerpt_length)
 			);
 
 			// Extend the data provided with each page by hooking into the data array

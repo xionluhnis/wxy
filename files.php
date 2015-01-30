@@ -42,8 +42,7 @@ class Files {
 	 */
 	public static function resolve($filename) {
 		$root = $_SERVER['DOCUMENT_ROOT'];
-		$uri = $_SERVER['REQUEST_URI'];
-		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
+        $uri = Files::current_uri();
 		$path = explode('/', $uri);
 		do {
 			$file = $root . implode('/', $path) . '/' . $filename;
@@ -71,9 +70,8 @@ class Files {
 	public static function resolve_all($filename) {
 		$files = array();
 		$root = $_SERVER['DOCUMENT_ROOT'];
-		$uri = $_SERVER['REQUEST_URI'];
-		$uri = preg_replace('/\?.*/', '', $uri); // Strip query string
-		$path = explode('/', $uri);
+        $uri = Files::current_uri();
+        $path = explode('/', $uri);
 		do {
 			$file = $root . implode('/', $path) . '/' . $filename;
 			if (file_exists($file)) {
@@ -87,7 +85,21 @@ class Files {
 			$files[] = $file;
 		}
 		return array_unique($files);
-	}
+    }
+
+    public static function resolve_page($route) {
+        $base_dir  = Files::base_dir();
+        // Get the file path
+        $base_file = rtrim($base_dir . $route, '/');
+        $file = $base_file . CONTENT_EXT;
+        if(is_dir($base_file)){
+            $index_file = $base_file . '/index' . CONTENT_EXT;
+            if(is_file($index_file)){
+                $file = $index_file;
+            }
+        }
+        return $file;
+    }
 	
 	/**
 	 * Retrieve the requested uri without the query
@@ -107,22 +119,13 @@ class Files {
 		if (substr($current, $len - 1) === '/')
 			return substr($current, 0, $len - 1);
 		return dirname($current);
-	}
+    }
 
-	/**
-	 * Helper function to limit the words in a string
-	 *
-	 * @param string $string the given string
-	 * @param int $word_limit the number of words to limit to
-	 * @return string the limited string
-	 */
-	public static function limit_words($string, $word_limit) {
-		$words = explode(' ', $string);
-		$excerpt = trim(implode(' ', array_splice($words, 0, $word_limit)));
-		if (count($words) > $word_limit)
-			$excerpt .= '&hellip;';
-		return $excerpt;
-	}
+    public static function base_dir() {
+        $root = rtrim($_SERVER['DOCUMENT_ROOT'], '/');
+        $base_url = Request::base_url();
+        return $root . $base_url;
+    }
 
 	/**
 	 * Loads the config
@@ -167,7 +170,7 @@ class Request {
 		if ($request_url != $script_url)
 			$url = trim(preg_replace('/' . str_replace('/', '\/', str_replace('index.php', '', $script_url)) . '/', '', $request_url, 1), '/');
 
-		$protocol = HTTP::get_protocol();
+		$protocol = Request::get_protocol();
 		return rtrim(str_replace($url, '', $protocol . "://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']), '/');
 	}
 	
@@ -209,6 +212,50 @@ class Request {
 		return $url;
 	}
 
+}
+
+
+/**
+ * Utility methods for text processing
+ */
+class Text {
+	/**
+	 * Helper function to limit the words in a string
+	 *
+	 * @param string $string the given string
+	 * @param int $word_limit the number of words to limit to
+	 * @return string the limited string
+	 */
+	public static function limit_words($string, $word_limit) {
+		$words = explode(' ', $string);
+		$excerpt = trim(implode(' ', array_splice($words, 0, $word_limit)));
+		if (count($words) > $word_limit)
+			$excerpt .= '&hellip;';
+		return $excerpt;
+    }
+
+    /**
+     * Check whether a string starts with another string
+     *
+     * @param string $haystack the string to look at the beginning of
+     * @param string $needle the string to look for
+     * @return boolean whether $haystack starts with $needle
+     */
+    public static function starts_with($haystack, $needle){
+        $length = strlen($needle);
+        return (substr($haystack, 0, $length) === $needle);
+    }
+
+    /**
+     * Check whether a string ends with another string
+     *
+     * @param string $haystack the string to look at the end of
+     * @param string $needle the string to look for
+     * @return boolean whether $haystack ends with $needle
+     */
+    public static function ends_with($haystack, $needle){
+        return substr($haystack, -strlen($needle)) === $needle;
+    }
 }
 
 ?>

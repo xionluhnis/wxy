@@ -7,13 +7,17 @@ include_once "files.php";
  */
 class Hook {
 
-	private $name;
+    private $name;
 	private $hooks;
 
 	public function __construct($hook_name) {
 		$this->name = $hook_name;
 		$this->hooks = array();
-	}
+    }
+
+    public function get_name() {
+        return $name;
+    }
 
 	public function connect($plugin) {
 		if (is_callable(array($plugin, $this->name))) {
@@ -88,9 +92,9 @@ class HookEnvironment {
 		if (empty($this->hooks)) {
 			return;
 		}
-		foreach ($this->hooks as $hook) {
-			$hook->connect($plugin);
-		}
+        foreach ($this->hooks as $hook) {
+            $hook->connect($plugin);
+        }
 	}
 
 	/**
@@ -117,9 +121,9 @@ class HookEnvironment {
 		foreach ($dirs as $dir) {
 			$plugins = Files::find($dir, '.php', FALSE);
 			if (empty($plugins)) {
-				return;
+				continue;
 			}
-			foreach ($plugins as $plugin) {
+            foreach ($plugins as $plugin) {
 				$this->load_plugin($plugin);
 			}
 		}
