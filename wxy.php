@@ -75,8 +75,8 @@ $defaults = array(
 	'theme'           => 'default',
 	'date_format'     => 'jS M Y',
 	'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
-	'pages_order_by'  => 'alpha',
-	'pages_order'     => 'asc',
+	'order_by'        => 'alpha',
+	'order'           => 'asc',
     'excerpt_length'  => 50,
     'timezone'        => 'America/New_York',
     'debug'           => FALSE,
@@ -177,12 +177,14 @@ $twig = new Twig_Environment($loader, $settings['twig_config']);
 if(array_key_exists('debug', $settings) && $settings['debug']){
 	$twig->addExtension(new Twig_Extension_Debug());
 }
+$base_url = $settings['base_url'];
+$parent_route = dirname(str_replace($base_url, '/', $route));
 $twig_vars = array(
 	'config'        => $settings,
 	'base_dir'      => $settings['base_dir'],
-	'base_url'      => $settings['base_url'],
+	'base_url'      => $base_url,
 	'theme_dir'     => $settings['theme'],
-	'theme_url'     => $settings['base_url'] . '/' . $theme_base_dir,
+	'theme_url'     => $base_url . '/' . $theme_base_dir,
 	'site_title'    => $settings['site_title'],
 	'meta'          => $meta,
 	'content'       => $content,
@@ -190,7 +192,10 @@ $twig_vars = array(
 	'prev_page'     => $prev_page,
 	'current_page'  => $current_page,
     'next_page'     => $next_page,
-    'parent_page'   => 
+    'current_route' => $route,
+    'parent_route'  => $parent_route,
+    'current_url'   => rtrim($base_url . '/' . $route, '/'),
+    'parent_url'    => rtrim($base_url . '/' . $parent_route, '/'),
 	'is_front_page' => trim($route, ' /') ? false : true,
 );
 if(isset($meta['template']) && $meta['template'])

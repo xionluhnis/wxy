@@ -94,7 +94,7 @@ class Markdown {
 			$url = str_replace(CONTENT_EXT, '', $url);
 			$data = array(
 				'title' => isset($page_meta['title']) ? $page_meta['title'] : '',
-                'url' => $url,
+                'url' => rtrim($url, '/'),
                 'file' => $page,
 				'author' => isset($page_meta['author']) ? $page_meta['author'] : '',
 				'date' => isset($page_meta['date']) ? $page_meta['date'] : '',

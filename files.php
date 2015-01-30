@@ -42,11 +42,11 @@ class Files {
 	 */
 	public static function resolve($filename) {
 		$root = $_SERVER['DOCUMENT_ROOT'];
-        $uri = Files::current_uri();
-		$path = explode('/', $uri);
+        $uri  = '/' . trim(Files::current_uri(), '/'); // we don't need the left or right slashes
+        $path = explode('/', $uri);
 		do {
 			$file = $root . implode('/', $path) . '/' . $filename;
-			if (file_exists($file)) {
+            if (file_exists($file)) {
 				return $file;
 			} else {
 				array_pop($path);
@@ -70,7 +70,7 @@ class Files {
 	public static function resolve_all($filename) {
 		$files = array();
 		$root = $_SERVER['DOCUMENT_ROOT'];
-        $uri = Files::current_uri();
+        $uri  = '/' . trim(Files::current_uri() , '/');
         $path = explode('/', $uri);
 		do {
 			$file = $root . implode('/', $path) . '/' . $filename;
@@ -87,6 +87,12 @@ class Files {
 		return array_unique($files);
     }
 
+    /**
+     * Resolve the page for a given route
+     *
+     * @param string $route
+     * @return string the page url
+     */
     public static function resolve_page($route) {
         $base_dir  = Files::base_dir();
         // Get the file path
@@ -138,8 +144,13 @@ class Files {
 			$old_config = $config;
 		} else {
 			$old_config = $defaults;
-		}
-		@include_once(self::resolve('config.php'));
+        }
+        $config_file = Files::resolve('config.php');
+        if(file_exists($config_file)){
+            @include_once($config_file);
+        } else {
+            die('No config.php found. Cannot resolve $base_url.');
+        }
 
 		if ($config == $old_config)
 			return $config; // no need to merge

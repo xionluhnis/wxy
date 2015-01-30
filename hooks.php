@@ -117,9 +117,9 @@ class HookEnvironment {
 	 * @param string $plugin_dir the directory to load plugins from
 	 */
 	public function load_dir($plugin_dir = 'plugins') {
-		$dirs = Files::resolve_all($plugin_dir);
+        $dirs = Files::resolve_all($plugin_dir);
 		foreach ($dirs as $dir) {
-			$plugins = Files::find($dir, '.php', FALSE);
+			$plugins = Files::find($dir, '.php');
 			if (empty($plugins)) {
 				continue;
 			}
@@ -136,7 +136,12 @@ class HookEnvironment {
 	 * @param type $args
 	 */
 	public function run_hooks($hook_name, $args = array()) {
-		$hook = $this->hooks[$hook_name];
+        $hook = $this->hooks[$hook_name];
+        if($hook_name == 'indexing_content'){
+            echo "<!-- hook for indexing_content:\n";
+            var_dump($this);
+            echo "-->\n";
+        }
 		if (!empty($hook)) {
 			$hook->run($args);
 		}
