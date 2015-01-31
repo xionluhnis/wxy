@@ -88,6 +88,7 @@ if($settings['debug']){
 }
 date_default_timezone_set($settings['timezone']);
 
+
 // 3 = Request routing ---------------------------------------------------------
 $route = Request::route();
 $env->run_hooks('request_url', array(&$route));

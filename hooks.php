@@ -88,7 +88,7 @@ class HookEnvironment {
      * 
      * @param mixed $plugin the plugin to register
      */
-    public function register_plugin($plugin, $plugin_name) {
+    public function register_plugin($plugin) {
         $this->plugins[] = $plugin;
         if (empty($this->hooks)) {
             return;
