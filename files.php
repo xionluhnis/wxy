@@ -99,7 +99,7 @@ class Files {
      * @return string the page url
      */
     public static function resolve_page($route) {
-        $base_dir  = Files::base_dir();
+        $base_dir  = rtrim(Files::base_dir(), '/');
         // Get the file path
         $base_file = rtrim($base_dir . $route, '/');
         $file = $base_file . CONTENT_EXT;
@@ -272,6 +272,22 @@ class Text {
     public static function ends_with($haystack, $needle){
         return substr($haystack, -strlen($needle)) === $needle;
     }
+
+    /**
+     * Helper function to clean extra slashes in urls and file paths
+     *
+     * @param string $str the string to clean
+     * @return string the string without duplicate slashes
+     */
+    public static function clean_slashes($str){
+        $off = 0;
+        while(FALSE !== ($pos = strpos($str, '//', $off))){
+            $str = substr($str, 0, $pos) . substr($str, $pos + 1);
+            $off = $pos;
+        }
+        return $str;
+    }
+
 }
 
 ?>
