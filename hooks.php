@@ -27,17 +27,18 @@ class Hook {
         return false;
     }
 
-    public function run(array $args = array()) {
+    public function run($args = array()) {
         if (empty($this->hooks)) {
             return;
         }
         foreach ($this->hooks as $hook) {
-            // if(is_callable(array($hook, $this->name))){
-            call_user_func_array(array($hook, $this->name), $args);
-            // }
+            $res = call_user_func_array(array($hook, $this->name), $args);
+            // stop the event in case one callback asked to
+            if($res){
+                return;
+            }
         }
     }
-
 }
 
 /**
@@ -87,7 +88,7 @@ class HookEnvironment {
      * 
      * @param mixed $plugin the plugin to register
      */
-    public function register_plugin($plugin) {
+    public function register_plugin($plugin, $plugin_name) {
         $this->plugins[] = $plugin;
         if (empty($this->hooks)) {
             return;
@@ -103,8 +104,8 @@ class HookEnvironment {
      * @param string $plugin_file the plugin file name
      */
     public function load_plugin($plugin_file) {
-        include_once($plugin_file);
         $plugin_name = preg_replace("/\\.[^.\\s]{3}$/", '', basename($plugin_file));
+        include_once($plugin_file);
         if (class_exists($plugin_name)) {
             $obj = new $plugin_name;
             $this->register_plugin($obj);
