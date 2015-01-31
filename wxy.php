@@ -179,7 +179,7 @@ if(array_key_exists('debug', $settings) && $settings['debug']){
     $twig->addExtension(new Twig_Extension_Debug());
 }
 $base_url = $settings['base_url'];
-$parent_route = dirname(str_replace($base_url, '/', $route));
+$parent_route = dirname(str_replace($base_url, '', $route));
 $twig_vars = array(
     'config'        => $settings,
     'base_dir'      => $settings['base_dir'],
@@ -195,8 +195,8 @@ $twig_vars = array(
     'next_page'     => $next_page,
     'current_route' => $route,
     'parent_route'  => $parent_route,
-    'current_url'   => rtrim($base_url . '/' . $route, '/'),
-    'parent_url'    => rtrim($base_url . '/' . $parent_route, '/'),
+    'current_url'   => rtrim($base_url . $route, '/'),
+    'parent_url'    => rtrim($base_url . $parent_route, '/'),
     'is_front_page' => trim($route, ' /') ? false : true,
 );
 if(isset($meta['template']) && $meta['template'])
