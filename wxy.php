@@ -147,24 +147,24 @@ $content = $new_content;
 
 // 7 = Create index ------------------------------------------------------------
 // Get all the pages
-$pages = array();
-$env->run_hooks('get_index', array($file, $env, &$pages));
-if(empty($pages)){
-    $pages = Markdown::get_pages($file, $env, $headers);
+$index = FALSE;
+$env->run_hooks('get_index', array($file, $env, $headers, &$index));
+if(!is_array($index)){
+    $index = Markdown::get_pages($file, $env, $headers);
 }
 $prev_page = array();
 $current_page = array();
 $next_page = array();
-while($current_page = current($pages)){
+while($current_page = current($index)){
     if($file == $current_page['file']){
         break;
     }
-    next($pages);
+    next($index);
 }
-$prev_page = next($pages);
-prev($pages);
-$next_page = prev($pages);
-$env->run_hooks('after_index', array(&$pages, &$current_page, &$prev_page, &$next_page));
+$prev_page = next($index);
+prev($index);
+$next_page = prev($index);
+$env->run_hooks('after_index', array(&$index, &$current_page, &$prev_page, &$next_page));
 
 
 // 8 = Template rendering ------------------------------------------------------
@@ -188,7 +188,7 @@ $twig_vars = array(
     'site_title'    => $settings['site_title'],
     'meta'          => $meta,
     'content'       => $content,
-    'pages'         => $pages,
+    'index'         => $index,
     'prev_page'     => $prev_page,
     'current_page'  => $current_page,
     'next_page'     => $next_page,

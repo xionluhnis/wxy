@@ -18,7 +18,7 @@ class Files {
      */
     public static function find($directory, $ext = '', $recursive = TRUE, $list_dirs = FALSE) {
         $array_items = array();
-        if ($handle = opendir($directory)) {
+        if (is_dir($directory) && $handle = opendir($directory)) {
             while (false !== ($file = readdir($handle))) {
                 if (preg_match("/^(^\.)/", $file) === 0) {
                     $full_file = $directory . '/' . $file;
