@@ -13,22 +13,27 @@ class Files {
      * @param string $directory start directory
      * @param string $ext optional limit to file extensions
      * @param boolean $recursive whether to search recursively
+     * @param boolean $list_dirs whether to include directories (except for . and ..)
      * @return array the matched files
      */
-    public static function find($directory, $ext = '', $recursive = TRUE) {
+    public static function find($directory, $ext = '', $recursive = TRUE, $list_dirs = FALSE) {
         $array_items = array();
         if ($handle = opendir($directory)) {
             while (false !== ($file = readdir($handle))) {
                 if (preg_match("/^(^\.)/", $file) === 0) {
-                    if (is_dir($directory . "/" . $file)) {
+                    $full_file = $directory . '/' . $file;
+                    if (is_dir($full_file)) {
+                        if ($list_dirs){
+                            if (!$ext || strstr($full_file, $ext))
+                                $array_items[] = preg_replace("/\/\//si", '/', $full_file);
+                        }
                         if ($recursive) {
                             $array_items = array_merge($array_items, 
-                                    Files::find($directory . "/" . $file, $ext));
+                                    Files::find($full_file, $ext));
                         }
                     } else {
-                        $file = $directory . "/" . $file;
-                        if (!$ext || strstr($file, $ext))
-                            $array_items[] = preg_replace("/\/\//si", "/", $file);
+                        if (!$ext || strstr($full_file, $ext))
+                            $array_items[] = preg_replace("/\/\//si", '/', $full_file);
                     }
                 }
             }

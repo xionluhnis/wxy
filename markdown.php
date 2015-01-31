@@ -63,7 +63,7 @@ class Markdown {
      */
     public static function get_pages($file, $env, $headers = array()) {
         global $config;
-        
+
         $cur_dir = dirname($file);
         $base_url = Request::base_url();
         $dir_url = Request::route();
@@ -94,6 +94,7 @@ class Markdown {
             $url = str_replace(CONTENT_EXT, '', $url);
             $data = array(
                 'title' => isset($page_meta['title']) ? $page_meta['title'] : '',
+                'type' => 'markdown',
                 'url' => rtrim($url, '/'),
                 'file' => $page,
                 'author' => isset($page_meta['author']) ? $page_meta['author'] : '',
