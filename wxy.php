@@ -4,6 +4,7 @@ define('CONTENT_EXT', '.md');
 define('ROOT_DIR', dirname(__FILE__));
 
 // Our helper functions --------------------------------------------------------
+include_once 'chrono.php';
 include_once 'files.php';
 include_once 'hooks.php';
 include_once 'markdown.php';
@@ -31,6 +32,7 @@ include_once 'libs/twig/lib/Twig/Autoloader.php';
 
 
 // 0 = Create hooks ------------------------------------------------------------
+tic();
 $env = new HookEnvironment(array(
     'plugins_loaded',   // when plugins are loaded
     'config_loaded',    // when the configuration is loaded
@@ -59,11 +61,13 @@ $env = new HookEnvironment(array(
     'before_render',
     'after_render',
 ));
+toc('env');
 
 
 // 1 = Load plugins ------------------------------------------------------------
 $env->load_dir('plugins');
 $env->run_hooks('plugins_loaded', array(&$env));
+toc('plugins');
 
 
 // 2 = Load the settings -------------------------------------------------------
@@ -87,11 +91,13 @@ if($settings['debug']){
   ini_set('display_errors', '1');
 }
 date_default_timezone_set($settings['timezone']);
+toc('config');
 
 
 // 3 = Request routing ---------------------------------------------------------
 $route = Request::route();
 $env->run_hooks('request_url', array(&$route));
+toc('route');
 
 
 // 4 = Load content ------------------------------------------------------------
@@ -115,6 +121,7 @@ Woops. Looks like this page doesn\'t exist.';
     $env->run_hooks('after_404_load_content', array(&$file, &$content));
 }
 $env->run_hooks('after_load_content', array(&$file, &$content));
+toc('content');
 
 
 // 5 = Load meta ---------------------------------------------------------------
@@ -133,6 +140,7 @@ if(empty($meta)){
     $meta = Markdown::read_file_meta($content, $headers);
 }
 $env->run_hooks('after_file_meta', array($content, &$meta));
+toc('meta');
 
 
 // 6 = Parse content -----------------------------------------------------------
@@ -144,6 +152,7 @@ if($new_content === FALSE){
 }
 $env->run_hooks('after_parse_content', array(&$new_content));
 $content = $new_content;
+toc('parse');
 
 
 // 7 = Create index ------------------------------------------------------------
@@ -166,6 +175,7 @@ $prev_page = next($index);
 prev($index);
 $next_page = prev($index);
 $env->run_hooks('after_index', array(&$index, &$current_page, &$prev_page, &$next_page));
+toc('index');
 
 
 // 8 = Template rendering ------------------------------------------------------
@@ -207,5 +217,11 @@ $env->run_hooks('before_render', array(&$twig_vars, &$twig, &$template));
 $output = $twig->render($template . '.html', $twig_vars);
 $env->run_hooks('after_render', array(&$output));
 echo $output;
+toc('template');
 
+if($config['debug']){
+    echo "<!--\n";
+    time_profile();
+    echo "-->\n";
+}
 ?>
