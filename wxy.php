@@ -76,7 +76,7 @@ $defaults = array(
     'base_dir'        => rtrim(dirname($_SERVER['SCRIPT_FILENAME']), '/'),
     'base_url'        => Request::default_base_url(),
     'theme_dir'       => 'themes',
-    'theme'           => 'default',
+    'theme'           => 'index',
     'date_format'     => 'jS M Y',
     'twig_config'     => array('cache' => false, 'autoescape' => false, 'debug' => false),
     'order_by'        => 'alpha',
