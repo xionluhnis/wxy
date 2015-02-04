@@ -43,6 +43,37 @@ class Files {
     }
 
     /**
+     * Search for files up to $levels level
+     *
+     * @param string $directory the base directory to search in
+     * @param number $levels the depth of search
+     * @return array the list of pages found
+     */
+    public static function find_pages($directory, $levels = 0) {
+        $array_items = array();
+        if (is_dir($directory) && $handle = opendir($directory)) {
+            while (false !== ($file = readdir($handle))) {
+                if (preg_match("/^(^\.)/", $file) === 0) {
+                    $full_file = $directory . '/' . $file;
+                    if (is_dir($full_file)) {
+                        if ($levels > 0) {
+                            $array_items = array_merge($array_items, 
+                                    Files::find_pages($full_file, $levels - 1));
+                        } else if(is_file($full_file . '/index' . CONTENT_EXT)){
+                            $array_items[] = preg_replace("/\/\//si", '/', $full_file . '/index' . CONTENT_EXT);
+                        }
+                    } else if(Text::ends_with($full_file, CONTENT_EXT)){
+                        $array_items[] = preg_replace("/\/\//si", '/', $full_file);
+                    }
+                }
+            }
+            closedir($handle);
+        }
+        return $array_items;
+
+    }
+
+    /**
      * Try to resolve a filename
      */
     public static function resolve($filename) {

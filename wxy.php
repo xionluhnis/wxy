@@ -182,7 +182,8 @@ toc('index');
 // Load the theme
 $env->run_hooks('before_twig_register');
 Twig_Autoloader::register();
-$theme_base_dir = $settings['theme_dir'] . '/' . $settings['theme'];
+$theme_base_dir = Files::resolve($settings['theme_dir']) . '/' . $settings['theme'];
+$theme_base_route = $settings['theme_dir'] . '/' . $settings['theme'];
 $loader = new Twig_Loader_Filesystem($theme_base_dir);
 $twig = new Twig_Environment($loader, $settings['twig_config']);
 if(array_key_exists('debug', $settings) && $settings['debug']){
@@ -195,7 +196,7 @@ $twig_vars = array(
     'base_dir'      => $settings['base_dir'],
     'base_url'      => $base_url,
     'theme_dir'     => $settings['theme'],
-    'theme_url'     => $base_url . '/' . $theme_base_dir,
+    'theme_url'     => $base_url . '/' . $theme_base_route,
     'site_title'    => $settings['site_title'],
     'meta'          => $meta,
     'content'       => $content,
