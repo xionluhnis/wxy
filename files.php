@@ -127,15 +127,16 @@ class Files {
      * Resolve the page for a given route
      *
      * @param string $route
+     * @param string $file_ext the file extension for content (CONTENT_EXT by default)
      * @return string the page url
      */
-    public static function resolve_page($route) {
+    public static function resolve_page($route, $file_ext = CONTENT_EXT) {
         $base_dir  = rtrim(Files::base_dir(), '/');
         // Get the file path
         $base_file = rtrim($base_dir . $route, '/');
-        $file = $base_file . CONTENT_EXT;
+        $file = $base_file . $file_ext;
         if(is_dir($base_file)){
-            $index_file = $base_file . '/index' . CONTENT_EXT;
+            $index_file = $base_file . '/index' . $file_ext;
             if(is_file($index_file)){
                 $file = $index_file;
             }

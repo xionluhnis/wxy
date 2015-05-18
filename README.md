@@ -65,8 +65,19 @@ the resolution is done first in the aforementioned order and then as well for th
 of `wxy.php`. If the script directory is in `/var/www/wxy/wxy.php`, then `/var/www/wxy/plugins`
 is resolved at the end.
 
+## Themes
+
+* [light](https://github.com/xionluhnis/wxy-light-theme) - light single-column responsive theme
+* [index](https://github.com/xionluhnis/wxy-index-theme) - photo gallery index theme
+
+## Plugins
+
+* [wxy-thumbnails](https://github.com/xionluhnis/wxy-thumbnails) - auto-generation of thumbnails
+* [wxy-media-index](https://github.com/xionluhnis/wxy-media-index) - media index to have access to text content as well as other file resources
+* [wxy-empty-directory](https://github.com/xionluhnis/wxy-empty-directory) - overwriting the 404 page
+* [wxy-default-index](https://github.com/xionluhnis/wxy-default-index) - give priority to index.html even when implicitly provided by the server
+
 ## TODO
 
-* Create themes
 * Add plugin for content management (probably want to pull data from yoctomanager)
-* Integrate *json* for parameters
+
