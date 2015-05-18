@@ -76,6 +76,7 @@ is resolved at the end.
 * [wxy-media-index](https://github.com/xionluhnis/wxy-media-index) - media index to have access to text content as well as other file resources
 * [wxy-empty-directory](https://github.com/xionluhnis/wxy-empty-directory) - overwriting the 404 page
 * [wxy-default-index](https://github.com/xionluhnis/wxy-default-index) - give priority to index.html even when implicitly provided by the server
+* [wxy-single-auth](https://github.com/xionluhnis/wxy-single-auth) - single-user authentication using http digest
 
 ## TODO
 
