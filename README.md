@@ -77,8 +77,9 @@ is resolved at the end.
 * [wxy-empty-directory](https://github.com/xionluhnis/wxy-empty-directory) - overwriting the 404 page
 * [wxy-default-index](https://github.com/xionluhnis/wxy-default-index) - give priority to index.html even when implicitly provided by the server
 * [wxy-single-auth](https://github.com/xionluhnis/wxy-single-auth) - single-user authentication using http digest
+* [wxy-editor](https://github.com/xionluhnis/wxy-editor) - content editor (markdown editor)
 
 ## TODO
 
-* Add plugin for content management (probably want to pull data from yoctomanager)
+* Add plugin for media management (uploading files)
 
