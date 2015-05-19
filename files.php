@@ -260,6 +260,45 @@ class Request {
         return $url;
     }
 
+    /**
+     * Return the filename corresponding to a url
+     *
+     * @param string $file_url
+     * @param string $base_url
+     * @return string the filename (without extension)
+     */
+    public static function get_real_filename($file_url, $base_url = FALSE) {
+        $file_components = parse_url($file_url);
+        $base_components = parse_url($base_url ? $base_url : self::base_url());
+        $file_path = rtrim($file_components['path'], '/');
+        $base_path = rtrim($base_components['path'], '/');
+        var_dump($file_path);
+        var_dump($base_path);
+        if(empty($file_path) || $file_path === $base_path){
+            return '/index';
+        } else {
+            $file_path = strip_tags(substr($file_path, strlen($base_path)));
+            if(is_dir($file_path)){
+                $file_path .= "/index";
+            }
+            return $file_path;
+        }
+    }
+
+    /**
+     * Retrieve a parameter from a request, while removing tags and providing a string default
+     *
+     * @param string $name the parameter name
+     * @param string $default_value
+     * @param string $from
+     * @return string the parameter value
+     */
+    public static function get_parameter($name, $default_value = '', $from = FALSE) {
+        if($from === FALSE)
+            $from = $_POST;
+        return isset($from[$name]) && $from[$name] ? strip_tags($from[$name]) : $default_value;
+    }
+
 }
 
 
