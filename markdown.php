@@ -70,8 +70,13 @@ class Markdown {
         if(substr($dir_url, -1) != '/'){
             $dir_url = $base_url . dirname(str_replace($base_url, '', $dir_url));
         }
+        // create index tree
+        $index_depth = 1;
         if(array_key_exists('index_depth', $config)){
-            $pages = Files::find_pages($cur_dir, $config['index_depth']);
+            $index_depth = $config['index_depth'];
+        }
+        if($index_depth >= 0){
+            $pages = Files::find_pages($cur_dir, $index_depth);
         } else {
             $pages = Files::find($cur_dir, CONTENT_EXT);
         }

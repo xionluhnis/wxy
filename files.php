@@ -299,6 +299,52 @@ class Request {
         return isset($from[$name]) && $from[$name] ? strip_tags($from[$name]) : $default_value;
     }
 
+    /**
+     * Try to resolve a filename and return the corresponding path
+     */
+    public static function resolve_path($filename) {
+        $root = $_SERVER['DOCUMENT_ROOT'];
+        $uri  = '/' . trim(Files::current_uri(), '/'); // we don't need the left or right slashes
+        $path_parts = explode('/', $uri);
+        do {
+            $path = implode('/', $path_parts) . '/' . $filename;
+            if (file_exists($root . $path)) {
+                return $path;
+            } else {
+                array_pop($path_parts);
+            }
+        } while (!empty($path_parts));
+        return FALSE;
+    }
+
+    /**
+     * Resolve path for custom suffix (for example for a custom css file)
+     *
+     * @param string $file_ext the file extension for custom content
+     * @param string $route (default route otherwise)
+     * @return string the custom file url (if the file exists)
+     */
+    public static function resolve_custom($file_ext, $route = FALSE) {
+        if($route == FALSE){
+            $route = Request::route();
+        }
+        $base_dir  = rtrim(Files::base_dir(), '/');
+        // Get the file path
+        $base_file = rtrim($base_dir . $route, '/');
+        if(is_dir($base_file)){
+            $index_file = $base_file . '/index' . $file_ext;
+            if(is_file($index_file)){
+                return rtrim($route, '/') . '/index' . $file_ext;
+            } else {
+                return FALSE;
+            }
+        } else if(file_exists($base_file . $file_ext)){
+          return rtrim($route, '/') . $file_ext;
+        } else {
+          return FALSE;
+        }
+    }
+
 }
 
 
